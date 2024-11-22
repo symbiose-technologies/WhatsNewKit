@@ -8,7 +8,7 @@ open class WhatsNewEnvironment {
     // MARK: Properties
     
     /// The current WhatsNew Version
-    public let currentVersion: WhatsNew.Version
+    public let currentVersion: WNew.Version
     
     /// The WhatsNewVersionStore
     public let whatsNewVersionStore: WhatsNewVersionStore
@@ -28,7 +28,7 @@ open class WhatsNewEnvironment {
     ///   - defaultLayout: The default WhatsNew Layout. Default value `.default`
     ///   - whatsNewCollection: The WhatsNewCollection
     public init(
-        currentVersion: WhatsNew.Version = .current(),
+        currentVersion: WNew.Version = .current(),
         versionStore: WhatsNewVersionStore = UserDefaultsWhatsNewVersionStore(),
         defaultLayout: WhatsNew.Layout = .default,
         whatsNewCollection: WhatsNewCollection = .init()
@@ -46,7 +46,7 @@ open class WhatsNewEnvironment {
     ///   - defaultLayout: The default WhatsNew Layout. Default value `.default`
     ///   - whatsNewCollection: The WhatsNewCollectionProvider
     public convenience init(
-        currentVersion: WhatsNew.Version = .current(),
+        currentVersion: WNew.Version = .current(),
         versionStore: WhatsNewVersionStore = UserDefaultsWhatsNewVersionStore(),
         defaultLayout: WhatsNew.Layout = .default,
         whatsNewCollection whatsNewCollectionProvider: WhatsNewCollectionProvider
@@ -66,7 +66,7 @@ open class WhatsNewEnvironment {
     ///   - defaultLayout: The default WhatsNew Layout. Default value `.default`
     ///   - whatsNewCollection: A result builder closure that produces a WhatsNewCollection
     public convenience init(
-        currentVersion: WhatsNew.Version = .current(),
+        currentVersion: WNew.Version = .current(),
         versionStore: WhatsNewVersionStore = UserDefaultsWhatsNewVersionStore(),
         defaultLayout: WhatsNew.Layout = .default,
         @WhatsNewCollectionBuilder
@@ -83,32 +83,17 @@ open class WhatsNewEnvironment {
     // MARK: WhatsNew
     
     /// Retrieve a WhatsNew that should be presented to the user, if available.
-    open func whatsNew() -> WhatsNew? {
-        // Retrieve presented WhatsNew Versions from WhatsNewVersionStore
-        let presentedWhatsNewVersions = self.whatsNewVersionStore.presentedVersions
-        // Verify the current Version has not been presented
-        guard !presentedWhatsNewVersions.contains(self.currentVersion) else {
-            // Otherwise WhatsNew has already been presented for the current version
-            return nil
-        }
-        // Check if a WhatsNew is available for the current Version
-        if let whatsNew = self.whatsNewCollection.first(where: { $0.version == self.currentVersion }) {
-            // Return WhatsNew for the current Version
-            return whatsNew
-        }
-        // Otherwise initialize current minor release Version
-        let currentMinorVersion = WhatsNew.Version(
-            major: self.currentVersion.major,
-            minor: self.currentVersion.minor,
-            patch: 0
+    /// - Parameter namespaces: The namespaces to consider for presentation
+    /// - Returns: A WhatsNew instance if one should be presented, nil otherwise
+    open func whatsNew(
+        forNamespaces namespaces: [String] = [],
+        includeGlobal: Bool = true
+    ) -> WhatsNew? {
+        self.whatsNewVersionStore.whatsNewToPresent(
+            from: self.whatsNewCollection,
+            namespaces: namespaces,
+            includeGlobal: includeGlobal
         )
-        // Verify the current minor release Version has not been presented
-        guard !presentedWhatsNewVersions.contains(currentMinorVersion) else {
-            // Otherwise WhatsNew for current minor release Version has already been preseted
-            return nil
-        }
-        // Return WhatsNew for current minor release Version, if available
-        return self.whatsNewCollection.first { $0.version == currentMinorVersion }
     }
     
 }

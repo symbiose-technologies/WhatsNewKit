@@ -33,7 +33,7 @@ extension NSUbiquitousKeyValueWhatsNewVersionStore: WriteableWhatsNewVersionStor
     /// Save presented WhatsNew Version
     /// - Parameter version: The presented WhatsNew Version that should be saved
     public func save(
-        presentedVersion version: WhatsNew.Version
+        presentedVersion version: WNew.Version
     ) {
         self.ubiquitousKeyValueStore.set(
             version.description,
@@ -48,12 +48,12 @@ extension NSUbiquitousKeyValueWhatsNewVersionStore: WriteableWhatsNewVersionStor
 extension NSUbiquitousKeyValueWhatsNewVersionStore: ReadableWhatsNewVersionStore {
     
     /// The WhatsNew Versions that have been already been presented
-    public var presentedVersions: [WhatsNew.Version] {
+    public var presentedVersions: [WNew.Version] {
         self.ubiquitousKeyValueStore
             .dictionaryRepresentation
-            .filter { $0.key.starts(with: WhatsNew.Version.keyPrefix) }
+            .filter { $0.key.starts(with: WNew.Version.keyPrefix) }
             .compactMap { $0.value as? String }
-            .map(WhatsNew.Version.init)
+            .map(WNew.Version.init)
     }
     
 }
@@ -65,7 +65,7 @@ public extension NSUbiquitousKeyValueWhatsNewVersionStore {
     /// Remove presented WhatsNew Version
     /// - Parameter version: The presented WhatsNew Version that should be removed
     func remove(
-        presentedVersion version: WhatsNew.Version
+        presentedVersion version: WNew.Version
     ) {
         self.ubiquitousKeyValueStore
             .removeObject(forKey: version.key)

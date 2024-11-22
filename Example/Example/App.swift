@@ -86,7 +86,74 @@ extension App: WhatsNewCollectionProvider {
             secondaryAction: .init(
                 title: "Learn more",
                 action: .openURL(.init(string: "https://github.com/SvenTiigi/WhatsNewKit"))
-            )
+            ),
+            headerBuilder: {
+                Circle()
+                .fill(Color.green.gradient)
+                .overlay { 
+                    Image(systemName: "star.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.white)
+                        .padding()
+                }
+                .frame(width: 80, height: 80)
+                .padding(.bottom, 10)
+            }
+        )
+        
+        WhatsNew(
+            version: .init(major: 0, minor: 1, patch: 0),
+            title: "What's New in 0.0",
+            features: [
+                .init(
+                    image: .init(
+                        systemName: "envelope",
+                        foregroundColor: .red
+                    ),
+                    title: "Found Events",
+                    subtitle: "Siri suggests events found in Mail, Messages, and Safari, so you can add them easily."
+                )
+            ]
+        )
+        
+        
+        WhatsNew(
+            version: .init(major: 1, minor: 0, patch: 0, namespace: "calendar"),
+            title: "What's New in Calendar",
+            features: [
+                .init(
+                    image: .init(
+                        systemName: "envelope",
+                        foregroundColor: .red
+                    ),
+                    title: "Found Events",
+                    subtitle: "Siri suggests events found in Mail, Messages, and Safari, so you can add them easily."
+                )
+            ]
+        )
+        
+        WhatsNew(
+            version: .init(major: 1, minor: 0, patch: 0, namespace: "feature-tour"),
+            title: "New Features Tour",
+            features: [
+                .init(
+                    image: .init(
+                        systemName: "wand.and.stars",
+                        foregroundColor: .purple
+                    ),
+                    title: "Advanced Features",
+                    subtitle: "Discover powerful tools and features to enhance your workflow."
+                ),
+                .init(
+                    image: .init(
+                        systemName: "gear",
+                        foregroundColor: .gray
+                    ),
+                    title: "Custom Settings",
+                    subtitle: "Configure the app to work exactly how you want it."
+                )
+            ]
         )
     }
     

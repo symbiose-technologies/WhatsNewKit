@@ -15,7 +15,14 @@ extension ContentView: View {
         NavigationStack {
             ExamplesView()
         }
-        .whatsNewSheet()
+        .whatsNewSheet(
+            namespaces: [
+                "onboarding",
+                "calendar",
+                "maps",
+                "translate"
+            ]
+        )
     }
     
 }

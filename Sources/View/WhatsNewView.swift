@@ -59,8 +59,13 @@ extension WhatsNewView: View {
                 VStack(
                     spacing: self.layout.contentSpacing
                 ) {
-                    // Title
-                    self.title
+                    VStack { 
+                        self.whatsNew.headerBuilder()
+                        // Title
+                        self.title
+                    }
+                    
+                    
                     // Feature List
                     VStack(
                         alignment: .leading,

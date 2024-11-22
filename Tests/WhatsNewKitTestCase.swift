@@ -18,7 +18,7 @@ class WhatsNewKitTestCase: XCTestCase {
     // MARK: Convenience Functions
     
     /// Make a random WhatsNew Version
-    func makeRandomWhatsNewVersion() -> WhatsNew.Version {
+    func makeRandomWhatsNewVersion() -> WNew.Version {
         let randomVersionRange = 0...9
         return .init(
             major: .random(in: randomVersionRange),
@@ -30,7 +30,7 @@ class WhatsNewKitTestCase: XCTestCase {
     /// Create a WhatsNew instance from a given WhatsNew Version
     /// - Parameter version: The WhatsNew Version
     func makeWhatsNew(
-        from version: WhatsNew.Version
+        from version: WNew.Version
     ) -> WhatsNew {
         .init(
             version: version,

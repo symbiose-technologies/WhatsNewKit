@@ -45,7 +45,7 @@ final class WhatsNewVersionStoreTests: WhatsNewKitTestCase {
         )
         XCTAssertEqual(
             version,
-            (fakeUserDefaults.store[version.key] as? String).flatMap(WhatsNew.Version.init)
+            (fakeUserDefaults.store[version.key] as? String).flatMap(WNew.Version.init)
         )
         userDefaultsWhatsNewVersionStore.removeAll()
         XCTAssert(
@@ -83,7 +83,7 @@ final class WhatsNewVersionStoreTests: WhatsNewKitTestCase {
         )
         XCTAssertEqual(
             version,
-            (fakeNSUbiquitousKeyValueStore.store[version.key] as? String).flatMap(WhatsNew.Version.init)
+            (fakeNSUbiquitousKeyValueStore.store[version.key] as? String).flatMap(WNew.Version.init)
         )
         ubiquitousKeyValueWhatsNewVersionStore.removeAll()
         XCTAssert(
@@ -94,13 +94,39 @@ final class WhatsNewVersionStoreTests: WhatsNewKitTestCase {
         )
     }
     
+    func testVersionStoreWithNamespace() {
+        let store = InMemoryWhatsNewVersionStore()
+        
+        // Test versions with different namespaces
+        let version1 = WNew.Version(major: 1, minor: 0, patch: 0, namespace: "feature1")
+        let version2 = WNew.Version(major: 1, minor: 0, patch: 0, namespace: "feature2")
+        let version3 = WNew.Version(major: 1, minor: 0, patch: 0) // global namespace
+        
+        store.save(presentedVersion: version1)
+        store.save(presentedVersion: version2)
+        store.save(presentedVersion: version3)
+        
+        // Verify all versions are stored
+        XCTAssertTrue(store.hasPresented(version1))
+        XCTAssertTrue(store.hasPresented(version2))
+        XCTAssertTrue(store.hasPresented(version3))
+        
+        // Verify versions with different namespaces are treated as distinct
+        XCTAssertEqual(store.presentedVersions.count, 3)
+        
+        // Test removal of specific namespaced version
+        store.remove(presentedVersion: version1)
+        XCTAssertFalse(store.hasPresented(version1))
+        XCTAssertTrue(store.hasPresented(version2))
+    }
+    
 }
 
 private extension WhatsNewVersionStoreTests {
     
     func executeVersionStoreTest(
         _ versionStore: WhatsNewVersionStore
-    ) -> WhatsNew.Version {
+    ) -> WNew.Version {
         let version = self.makeRandomWhatsNewVersion()
         XCTAssert(versionStore.presentedVersions.isEmpty)
         XCTAssertFalse(versionStore.hasPresented(version))

@@ -10,19 +10,12 @@ extension Text {
         whatsNewText: WhatsNew.Text
     ) {
         // Check if iOS 15 or greater is available
-        if #available(iOS 15.0, macOS 12.0, visionOS 1.0, *) {
-            // Initialize with AttributedString
-            self.init(
-                AttributedString(
-                    whatsNewText.attributedString
-                )
+        // Initialize with AttributedString
+        self.init(
+            AttributedString(
+                whatsNewText.attributedString
             )
-        } else {
-            // Initialize with raw string value
-            self.init(
-                verbatim: whatsNewText.attributedString.string
-            )
-        }
+        )
     }
     
 }

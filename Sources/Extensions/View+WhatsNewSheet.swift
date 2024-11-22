@@ -87,14 +87,19 @@ public extension View {
     
     /// Auto-Presents a WhatsNewView to the user if needed based on the `WhatsNewEnvironment`
     /// - Parameters:
+    ///   - namespaces: Array of namespaces to present WhatsNew for. Default value `[]` (global namespace)
     ///   - layout: The optional custom WhatsNew Layout. Default value `nil`
     ///   - onDismiss: The closure to execute when dismissing the sheet. Default value `nil`
     func whatsNewSheet(
+        namespaces: [String] = [],
+        includeGlobal: Bool = true,
         layout: WhatsNew.Layout? = nil,
         onDismiss: (() -> Void)? = nil
     ) -> some View {
         self.modifier(
             AutomaticWhatsNewSheetViewModifier(
+                namespaces: namespaces,
+                includeGlobal: includeGlobal,
                 layout: layout,
                 onDismiss: onDismiss
             )
@@ -110,6 +115,11 @@ private struct AutomaticWhatsNewSheetViewModifier: ViewModifier {
     
     // MARK: Properties
     
+    /// The namespaces to present WhatsNew for
+    let namespaces: [String]
+    
+    let includeGlobal: Bool
+    
     /// The optional WhatsNew Layout
     let layout: WhatsNew.Layout?
     
@@ -124,6 +134,23 @@ private struct AutomaticWhatsNewSheetViewModifier: ViewModifier {
     @Environment(\.whatsNew)
     private var whatsNewEnvironment
     
+    
+    var itemBinding: Binding<WhatsNew?> {
+        .init(
+            get: {
+                if self.isDismissed == true {
+                    return nil
+                }
+                
+                return self.whatsNewEnvironment.whatsNew(forNamespaces: self.namespaces, includeGlobal: self.includeGlobal)
+                
+            },
+            set: { value, transaction in
+                self.isDismissed = value == nil
+            }
+        )
+    }
+    
     // MARK: ViewModifier
     
     /// Gets the current body of the caller.
@@ -131,25 +158,43 @@ private struct AutomaticWhatsNewSheetViewModifier: ViewModifier {
     func body(
         content: Content
     ) -> some View {
-        content.sheet(
-            item: .init(
+        content
+            .sheet(item: Binding <WhatsNew?>.init(
                 get: {
-                    self.isDismissed == true
-                        ? nil
-                        : self.whatsNewEnvironment.whatsNew()
+                    if self.isDismissed == true {
+                        return nil
+                    }
+                    
+                    return self.whatsNewEnvironment.whatsNew(forNamespaces: self.namespaces, includeGlobal: self.includeGlobal)
+                    
                 },
-                set: {
-                    self.isDismissed = $0 == nil
+                set: { value, transaction in
+                    self.isDismissed = value == nil
                 }
-            ),
-            onDismiss: self.onDismiss
-        ) { whatsNew in
-            WhatsNewView(
-                whatsNew: whatsNew,
-                versionStore: self.whatsNewEnvironment.whatsNewVersionStore,
-                layout: self.layout ?? self.whatsNewEnvironment.defaultLayout
-            )
-        }
+            )) {
+                self.onDismiss?()
+            } content: { whatsNew in
+                WhatsNewView(
+                    whatsNew: whatsNew,
+                    versionStore: self.whatsNewEnvironment.whatsNewVersionStore,
+                    layout: self.layout ?? self.whatsNewEnvironment.defaultLayout
+                )
+            }
+            .onChange(of: self.isDismissed, initial: false) { old, new in
+                if new == true {
+                    //after 0.2 second -- check if there is another
+                    self.showNextIfAvailable()
+                }
+            }
+            
+    }
+    
+    func showNextIfAvailable() {
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+//            if let whatsNew = self.whatsNewEnvironment.whatsNew(forNamespaces: self.namespaces) {
+//                self.isDismissed = nil
+//            }
+//        }
     }
     
 }

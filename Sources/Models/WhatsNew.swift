@@ -2,13 +2,21 @@ import Foundation
 
 // MARK: - WhatsNew
 
+import SwiftUI
+
+public enum WNew { }
+
+public extension WNew {
+    
+}
+
 /// A WhatsNew object
 public struct WhatsNew {
     
     // MARK: Properties
     
     /// The Version
-    public var version: Version
+    public var version: WNew.Version
     
     /// The Title
     public var title: Title
@@ -23,7 +31,9 @@ public struct WhatsNew {
     public var secondaryAction: SecondaryAction?
     
     // MARK: Initializer
-    
+    public var headerBuilder: () -> AnyView
+
+
     /// Creates a new instance of `WhatsNew`
     /// - Parameters:
     ///   - version: The Version. Default value `.current()`
@@ -31,18 +41,20 @@ public struct WhatsNew {
     ///   - items: The Features
     ///   - primaryAction: The PrimaryAction. Default value `.init()`
     ///   - secondaryAction: The optional SecondaryAction. Default value `nil`
-    public init(
-        version: Version = .current(),
+    public init<H: View>(
+        version: WNew.Version = .current(),
         title: Title,
         features: [Feature],
         primaryAction: PrimaryAction = .init(),
-        secondaryAction: SecondaryAction? = nil
+        secondaryAction: SecondaryAction? = nil,
+        @ViewBuilder headerBuilder: @escaping () -> H = { EmptyView() }
     ) {
         self.version = version
         self.title = title
         self.features = features
         self.primaryAction = primaryAction
         self.secondaryAction = secondaryAction
+        self.headerBuilder = { AnyView(headerBuilder()) }
     }
     
 }
@@ -52,7 +64,7 @@ public struct WhatsNew {
 extension WhatsNew: Identifiable {
     
     /// The stable identity of the entity associated with this instance.
-    public var id: Version {
+    public var id: WNew.Version {
         self.version
     }
     

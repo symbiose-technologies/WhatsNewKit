@@ -1,8 +1,8 @@
 import Foundation
 
-// MARK: - WhatsNew.Version+key
+// MARK: - WNew.Version+key
 
-extension WhatsNew.Version {
+extension WNew.Version {
     
     /// The WhatsNew Version Key prefix
     static let keyPrefix = "WhatsNewKit"
@@ -12,6 +12,7 @@ extension WhatsNew.Version {
     var key: String {
         [
             Self.keyPrefix,
+            self.namespace ?? "global",
             self.description
         ]
         .joined(separator: ".")

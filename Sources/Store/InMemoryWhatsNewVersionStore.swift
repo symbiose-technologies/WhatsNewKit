@@ -13,7 +13,7 @@ public final class InMemoryWhatsNewVersionStore {
     // MARK: Properties
     
     /// The Versions
-    public var versions: Set<WhatsNew.Version>
+    public var versions: Set<WNew.Version>
     
     // MARK: Initializer
     
@@ -31,7 +31,7 @@ extension InMemoryWhatsNewVersionStore: WriteableWhatsNewVersionStore {
     /// Save presented WhatsNew Version
     /// - Parameter version: The presented WhatsNew Version that should be saved
     public func save(
-        presentedVersion version: WhatsNew.Version
+        presentedVersion version: WNew.Version
     ) {
         self.versions.insert(version)
     }
@@ -43,7 +43,7 @@ extension InMemoryWhatsNewVersionStore: WriteableWhatsNewVersionStore {
 extension InMemoryWhatsNewVersionStore: ReadableWhatsNewVersionStore {
     
     /// The WhatsNew Versions that have been already been presented
-    public var presentedVersions: [WhatsNew.Version] {
+    public var presentedVersions: [WNew.Version] {
         .init(self.versions)
     }
     
@@ -56,7 +56,7 @@ public extension InMemoryWhatsNewVersionStore {
     /// Remove presented WhatsNew Version
     /// - Parameter version: The presented WhatsNew Version that should be removed
     func remove(
-        presentedVersion version: WhatsNew.Version
+        presentedVersion version: WNew.Version
     ) {
         self.versions.remove(version)
     }

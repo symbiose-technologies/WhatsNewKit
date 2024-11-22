@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - WhatsNew+Version
 
-public extension WhatsNew {
+public extension WNew {
     
     /// A WhatsNew Version
     struct Version: Hashable {
@@ -17,10 +17,12 @@ public extension WhatsNew {
         
         /// The patch version
         public var patch: Int
-        
+
+        /// The namespace
+        public var namespace: String? = nil
         // MARK: Initializer
         
-        /// Creates a new instance of `WhatsNew.Version`
+        /// Creates a new instance of `WNew.Version`
         /// - Parameters:
         ///   - major: The major version
         ///   - minor: The minor version
@@ -28,11 +30,13 @@ public extension WhatsNew {
         public init(
             major: Int,
             minor: Int,
-            patch: Int
+            patch: Int,
+            namespace: String? = nil
         ) {
             self.major = major
             self.minor = minor
             self.patch = patch
+            self.namespace = namespace
         }
         
     }
@@ -41,7 +45,7 @@ public extension WhatsNew {
 
 // MARK: - Comparable
 
-extension WhatsNew.Version: Comparable {
+extension WNew.Version: Comparable {
     
     /// Returns a Boolean value indicating whether the value of the first
     /// argument is less than that of the second argument.
@@ -59,48 +63,65 @@ extension WhatsNew.Version: Comparable {
 
 // MARK: - CustomStringConvertible
 
-extension WhatsNew.Version: CustomStringConvertible {
+extension WNew.Version: CustomStringConvertible {
     
     /// A textual representation of this instance.
     public var description: String {
-        [
+        let versionString = [
             self.major,
             self.minor,
             self.patch
         ]
         .map(String.init)
         .joined(separator: ".")
+        
+        if let namespace = self.namespace {
+            return "\(namespace)@\(versionString)"
+        }
+        return versionString
     }
     
 }
 
 // MARK: - ExpressibleByStringLiteral
 
-extension WhatsNew.Version: ExpressibleByStringLiteral {
+extension WNew.Version: ExpressibleByStringLiteral {
     
     /// Creates an instance initialized to the given string value.
     /// - Parameter value: The value of the new instance.
     public init(
         stringLiteral value: String
     ) {
-        let components = value.components(separatedBy: ".").compactMap(Int.init)
-        self.major = components.indices.contains(0) ? components[0] : 0
-        self.minor = components.indices.contains(1) ? components[1] : 0
-        self.patch = components.indices.contains(2) ? components[2] : 0
+        // Split namespace and version if present
+        let parts = value.split(separator: "@", maxSplits: 1)
+        if parts.count > 1 {
+            self.namespace = String(parts[0])
+            let versionString = String(parts[1])
+            let components = versionString.components(separatedBy: ".").compactMap(Int.init)
+            self.major = components.indices.contains(0) ? components[0] : 0
+            self.minor = components.indices.contains(1) ? components[1] : 0
+            self.patch = components.indices.contains(2) ? components[2] : 0
+        } else {
+            let components = value.components(separatedBy: ".").compactMap(Int.init)
+            self.namespace = nil
+            self.major = components.indices.contains(0) ? components[0] : 0
+            self.minor = components.indices.contains(1) ? components[1] : 0
+            self.patch = components.indices.contains(2) ? components[2] : 0
+        }
     }
     
 }
 
 // MARK: - Current
 
-public extension WhatsNew.Version {
+public extension WNew.Version {
     
     /// Retrieve current WhatsNew Version based on the current Version String in the Bundle
     /// - Parameter bundle: The Bundle. Default value `.main`
-    /// - Returns: WhatsNew.Version
+    /// - Returns: WNew.Version
     static func current(
         in bundle: Bundle = .main
-    ) -> WhatsNew.Version {
+    ) -> WNew.Version {
         // Retrieve Bundle short Version String
         let shortVersionString = bundle.infoDictionary?["CFBundleShortVersionString"] as? String
         // Return initialized Version via String Literal

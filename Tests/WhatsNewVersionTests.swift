@@ -8,7 +8,7 @@ final class WhatsNewVersionTests: WhatsNewKitTestCase {
     
     func testStringLiteral() {
         let whatsNewVersionString = "9.9.9"
-        let whatsNewVersion = WhatsNew.Version(stringLiteral: whatsNewVersionString)
+        let whatsNewVersion = WNew.Version(stringLiteral: whatsNewVersionString)
         XCTAssertEqual(
             whatsNewVersionString,
             whatsNewVersion.description
@@ -17,7 +17,7 @@ final class WhatsNewVersionTests: WhatsNewKitTestCase {
     
     func testBadStringLiteral() {
         let whatsNewVersionString = UUID().uuidString
-        let whatsNewVersion = WhatsNew.Version(stringLiteral: whatsNewVersionString)
+        let whatsNewVersion = WNew.Version(stringLiteral: whatsNewVersionString)
         XCTAssertEqual(
             "0.0.0",
             whatsNewVersion.description
@@ -25,7 +25,7 @@ final class WhatsNewVersionTests: WhatsNewKitTestCase {
     }
     
     func testComparable() {
-        let sortedVersions: [WhatsNew.Version] = [
+        let sortedVersions: [WNew.Version] = [
             "1.0.0",
             "1.0.1",
             "1.1.1",
@@ -58,19 +58,19 @@ final class WhatsNewVersionTests: WhatsNewKitTestCase {
         let fakeBundle = FakeBundle(shortVersionString: version.description)
         XCTAssertEqual(
             version,
-            WhatsNew.Version.current(in: fakeBundle)
+            WNew.Version.current(in: fakeBundle)
         )
         let fakeBundleEmptyVersion = FakeBundle(shortVersionString: "")
         XCTAssertEqual(
-            WhatsNew.Version(major: 0, minor: 0, patch: 0),
-            WhatsNew.Version.current(in: fakeBundleEmptyVersion)
+            WNew.Version(major: 0, minor: 0, patch: 0),
+            WNew.Version.current(in: fakeBundleEmptyVersion)
         )
     }
     
     func testKeyPrefix() {
         XCTAssertEqual(
             "WhatsNewKit",
-            WhatsNew.Version.keyPrefix
+            WNew.Version.keyPrefix
         )
     }
     
